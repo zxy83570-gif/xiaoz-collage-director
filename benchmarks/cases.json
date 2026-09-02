@@ -1,0 +1,152 @@
+[
+  {
+    "id": "B01",
+    "category": "abstract-opinion",
+    "input": "选择越多，人反而越难开始行动。",
+    "duration_seconds": 5,
+    "expected": [
+      "One subject faces increasing options and visibly stalls.",
+      "The final image proves paralysis without relying on readable labels.",
+      "The composition stays simple enough to read in five seconds."
+    ],
+    "critical_failures": [
+      "The scene presents choice as freedom or abundance without showing hesitation.",
+      "The meaning depends on text."
+    ]
+  },
+  {
+    "id": "B02",
+    "category": "abstract-opinion",
+    "input": "效率不是把每件事做快，而是减少任务之间的来回切换。",
+    "duration_seconds": 6,
+    "expected": [
+      "Repeated switching creates visible cost before a cleaner path appears.",
+      "The same work token survives both the inefficient and efficient states.",
+      "The ending emphasizes reduced switching rather than generic speed."
+    ],
+    "critical_failures": [
+      "The output communicates only fast versus slow.",
+      "The tracked work item changes identity."
+    ]
+  },
+  {
+    "id": "B03",
+    "category": "abstract-opinion",
+    "input": "推荐算法越懂你，也可能让你看到的世界越来越窄。",
+    "duration_seconds": 8,
+    "expected": [
+      "Personalization and narrowing are both visible parts of one mechanism.",
+      "A repeated content token becomes more uniform or constrained over time.",
+      "No fake application interface is used."
+    ],
+    "critical_failures": [
+      "The output shows only surveillance or only convenience.",
+      "A fake UI dominates the explanation."
+    ]
+  },
+  {
+    "id": "B04",
+    "category": "causal-journey",
+    "input": "一个塑料瓶被回收后，会经历压缩、粉碎、熔融和拉丝，最后可能变成衣服。",
+    "duration_seconds": 15,
+    "expected": [
+      "Bottle, flakes, melted material, fiber, and garment form a clear sequence.",
+      "A distinctive bottle feature remains trackable through each state.",
+      "Each transformation uses materially plausible collage motion."
+    ],
+    "critical_failures": [
+      "The bottle jumps directly to a garment.",
+      "The continuity token disappears in an intermediate state."
+    ]
+  },
+  {
+    "id": "B05",
+    "category": "causal-journey",
+    "input": "你按下发送后，一条消息会穿过路由器、运营商网络和数据中心，最后抵达另一部手机。",
+    "duration_seconds": 15,
+    "expected": [
+      "The message remains one identifiable packet through several infrastructures.",
+      "Transfer direction and handoffs remain spatially coherent.",
+      "The final phone receives the same packet rather than a decorative signal burst."
+    ],
+    "critical_failures": [
+      "The sequence becomes unrelated technology imagery.",
+      "Readable chat text is required to follow the packet."
+    ]
+  },
+  {
+    "id": "B06",
+    "category": "causal-journey",
+    "input": "雨落到城市以后，会进入排水系统、净化设施，再回到可以使用的水循环里。",
+    "duration_seconds": 12,
+    "expected": [
+      "Rain, drainage, treatment, and reuse form a continuous water path.",
+      "One visual water token changes condition without losing identity.",
+      "Treatment is visible as a process, not a magical color swap."
+    ],
+    "critical_failures": [
+      "Water teleports between locations.",
+      "The final state implies untreated water is immediately drinkable."
+    ]
+  },
+  {
+    "id": "B07",
+    "category": "ordinary-broll",
+    "input": "AI 工具不是魔法，它只是把一串重复步骤压缩成了一个入口。",
+    "duration_seconds": 5,
+    "expected": [
+      "Several concrete repeated actions visibly collapse into one controllable mechanism.",
+      "The output avoids mystical imagery and fake interfaces.",
+      "The final arrangement expresses compression, not deletion of work."
+    ],
+    "critical_failures": [
+      "Magic particles or a robot head replace the actual idea.",
+      "The concept depends on a button label."
+    ]
+  },
+  {
+    "id": "B08",
+    "category": "ordinary-broll",
+    "input": "一个好习惯不只靠意志力，更靠环境把正确动作变得顺手。",
+    "duration_seconds": 6,
+    "expected": [
+      "The same person or hand faces friction before the environment is rearranged.",
+      "The correct action becomes physically easier in the final state.",
+      "Environment design, not motivation, is the visible cause."
+    ],
+    "critical_failures": [
+      "The scene becomes a generic motivational poster.",
+      "A brain or head metaphor replaces environmental change."
+    ]
+  },
+  {
+    "id": "B09",
+    "category": "fast-showcase",
+    "input": "一双跑鞋到达货架前，要经过材料切割、鞋面缝合、鞋底压合、质检和运输。",
+    "duration_seconds": 15,
+    "expected": [
+      "Five production stages remain distinguishable at fast pace.",
+      "A specific stripe, lace eyelet, or cut pattern maintains shoe identity.",
+      "Each stage adds a necessary component and the shoe is complete only at the end."
+    ],
+    "critical_failures": [
+      "The shoe is already complete before the stated assembly stages.",
+      "Fast motion makes the production order unreadable."
+    ]
+  },
+  {
+    "id": "B10",
+    "category": "fast-showcase",
+    "input": "早晨的一杯咖啡，连接着山坡采摘、处理晾晒、长途运输、烘焙研磨和冲煮。",
+    "duration_seconds": 15,
+    "expected": [
+      "The route from fruit to finished drink is chronological and dense but readable.",
+      "A deliberate continuity token persists across source, parcel, roasting, and cup states.",
+      "Motion begins immediately and the final cup locks for less than half a second."
+    ],
+    "critical_failures": [
+      "The output is a travel montage with no transformation chain.",
+      "The final cup cannot be connected to the opening source."
+    ]
+  }
+]
