@@ -1,0 +1,4 @@
+interface:
+  display_name: "Editorial Collage Video Director"
+  short_description: "Design dense, logical editorial paper-collage videos"
+  default_prompt: "Use $editorial-collage-video-director to turn this narration into a logical paper-collage storyboard and model-ready video prompt."
