@@ -1,0 +1,9 @@
+Reference timing:
+Picture 1 is the opening image at 0.00 seconds.
+Picture 2 is the closing image at 5.00 seconds.
+
+integrated_multimodal_description: [Shot 1] A premium frontal editorial paper-collage scene begins in the exact opening arrangement. Motion starts immediately: three halftone coffee beans tumble from the torn printed sack while its red diagonal stripe and circular punch remain unmistakable. From 0.45 to 1.40 seconds, the beans slide along the stripe, each landing with a dry card tap; the sack folds inward along scored creases and becomes a compact shipping parcel without losing the red stripe or punch. From 1.40 to 2.70 seconds, the parcel travels laterally on two layered paper rails while small port silhouettes hinge upright behind it, then flatten as it passes. From 2.70 to 4.20 seconds, the parcel seam peels open and the beans roll into a circular roasting-drum cutout mounted on a brass paper fastener; the drum rotates in short stop-motion steps and the beans darken through printed halftone replacements rather than liquid morphing. From 4.20 seconds, the drum unfolds and every remaining piece slides, presses, and locks toward the exact closing image. Match Picture 2 precisely in composition, object count, palette, stripe position, circular punch, and shallow paper shadows by 4.70 seconds; hold the settled collage only through 5.00 seconds. No readable text, logos, subtitles, global fades, floating digital layers, or unrelated fragments.
+
+overall_soundscape: Tight synchronized paper scrapes, dry bean taps, scored-card folds, two rail clicks, a tape peel, and short stepped drum ticks. No voice or ambient crowd.
+
+non_diegetic_music: N/A
