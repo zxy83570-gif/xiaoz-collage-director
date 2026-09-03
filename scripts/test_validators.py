@@ -21,10 +21,50 @@ overall_soundscape: Dry paper scrapes and one precise card click.
 non_diegetic_music: N/A
 """
 
+VALID_REF2VA = """subject_definitions:
+<Subject 1>: The red paper token from the supplied image.
+<Picture 1>: The approved closing composition at 4.00 seconds.
+summary:
+keyframe completion and reference generation. Build a paper-collage assembly into the approved ending.
+retention_analysis:
+<Subject 1>: fully_preserved in Shot 1; retain its red color and punched corner.
+<Picture 1>: fully_preserved as the closing composition; only the inferred preceding state changes.
+detailed_description:
+Premium editorial paper collage with tactile stop-motion construction and shallow physical shadows. [Shot 1] <Subject 1> slides across a matching paper field, rebounds slightly, and presses flat as surrounding pieces assemble. The arrangement converges precisely to <Picture 1> at 4.00 seconds.
+overall_soundscape:
+Dry paper slides, soft taps, and one crisp final press.
+non_diegetic_music:
+N/A
+"""
+
 
 class H3ValidatorTests(unittest.TestCase):
     def test_valid_prompt(self) -> None:
         self.assertEqual(validate_h3(VALID, 5.0), [])
+
+    def test_valid_ref2va_prompt(self) -> None:
+        self.assertEqual(validate_h3(VALID_REF2VA, 4.0), [])
+
+    def test_ref2va_fixed_field_order(self) -> None:
+        invalid = VALID_REF2VA.replace(
+            "summary:\nkeyframe completion and reference generation. Build a paper-collage assembly into the approved ending.\nretention_analysis:",
+            "retention_analysis:\n<Subject 1>: fully_preserved.\n<Picture 1>: fully_preserved.\nsummary:",
+        )
+        errors = validate_h3(invalid, 4.0)
+        self.assertTrue(any("required order" in error for error in errors))
+
+    def test_ref2va_requires_task_type(self) -> None:
+        invalid = VALID_REF2VA.replace("keyframe completion and reference generation.", "Make a collage.")
+        errors = validate_h3(invalid, 4.0)
+        self.assertTrue(any("official task type" in error for error in errors))
+
+    def test_ref2va_requires_retention_for_each_label(self) -> None:
+        invalid = VALID_REF2VA.replace(
+            "<Picture 1>: fully_preserved as the closing composition; only the inferred preceding state changes.\n",
+            "",
+        )
+        errors = validate_h3(invalid, 4.0)
+        self.assertTrue(any("omits labels" in error for error in errors))
 
     def test_missing_field(self) -> None:
         errors = validate_h3(VALID.replace("overall_soundscape:", "soundscape:"), 5.0)
@@ -68,6 +108,10 @@ class H3ValidatorTests(unittest.TestCase):
 
     def test_empty_prompt(self) -> None:
         self.assertEqual(validate_h3("", 5.0), ["prompt is empty"])
+
+    def test_duration_outside_h3_range(self) -> None:
+        errors = validate_h3(VALID, 3.0)
+        self.assertTrue(any("between 4 and 15" in error for error in errors))
 
 
 if __name__ == "__main__":

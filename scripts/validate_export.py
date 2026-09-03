@@ -9,11 +9,39 @@ import sys
 from pathlib import Path
 
 
-H3_FIELDS = (
+BASIC_H3_FIELDS = (
     "integrated_multimodal_description",
     "overall_soundscape",
     "non_diegetic_music",
 )
+
+REF2VA_FIELDS = (
+    "subject_definitions",
+    "summary",
+    "retention_analysis",
+    "detailed_description",
+    "overall_soundscape",
+    "non_diegetic_music",
+)
+
+TASK_TYPES = (
+    "keyframe completion",
+    "reference generation",
+    "video editing",
+    "video continuation",
+    "audio reuse",
+    "audio reference",
+)
+
+RETENTION_MARKERS = {
+    "fully_preserved",
+    "partially_preserved",
+    "attribute_transfer",
+    "weak_reference",
+    "fully_copy",
+    "partially_copy",
+    "reference",
+}
 
 
 def _field_positions(text: str, fields: tuple[str, ...]) -> tuple[list[int], list[str]]:
@@ -37,25 +65,66 @@ def _time_values(text: str) -> list[float]:
     return values
 
 
+def _section_text(text: str, field: str, fields: tuple[str, ...]) -> str:
+    start = re.search(rf"(?m)^{re.escape(field)}\s*:\s*", text)
+    if not start:
+        return ""
+    later = [
+        match.start()
+        for other in fields
+        if other != field
+        for match in [re.search(rf"(?m)^{re.escape(other)}\s*:", text[start.end() :])]
+        if match
+    ]
+    end = start.end() + min(later) if later else len(text)
+    return text[start.end() : end].strip()
+
+
 def validate_h3(text: str, expected_duration: float | None = None) -> list[str]:
     errors: list[str] = []
     stripped = text.strip()
     if not stripped:
         return ["prompt is empty"]
 
-    _, field_errors = _field_positions(text, H3_FIELDS)
+    is_ref2va = bool(re.search(r"(?m)^subject_definitions\s*:", text))
+    fields = REF2VA_FIELDS if is_ref2va else BASIC_H3_FIELDS
+    _, field_errors = _field_positions(text, fields)
     errors.extend(field_errors)
 
-    for field in H3_FIELDS:
-        match = re.search(rf"(?m)^{re.escape(field)}\s*:\s*(.*)$", text)
-        if match and not match.group(1).strip():
-            errors.append(f"field '{field}' has no inline content")
+    for field in fields:
+        if not _section_text(text, field, fields):
+            errors.append(f"field '{field}' has no content")
 
     if "[Shot 1]" not in text:
-        errors.append("main description must include [Shot 1]")
+        errors.append("main or detailed description must include [Shot 1]")
 
     if re.search(r"(?i)\b(?:TODO|TBD|PLACEHOLDER)\b|\[insert[^\]]*\]", text):
         errors.append("prompt contains an unfinished placeholder")
+
+    if is_ref2va:
+        if re.search(r"(?m)^integrated_multimodal_description\s*:", text):
+            errors.append("Ref2VA must use detailed_description, not integrated_multimodal_description")
+
+        definitions = _section_text(text, "subject_definitions", fields)
+        defined_labels = set(re.findall(r"<(?:Subject|Picture|Video|Audio)\s+\d+>", definitions))
+        used_labels = set(re.findall(r"<(?:Subject|Picture|Video|Audio)\s+\d+>", text))
+        if not defined_labels:
+            errors.append("Ref2VA subject_definitions must define at least one reference label")
+        undefined = sorted(used_labels - defined_labels)
+        if undefined:
+            errors.append(f"Ref2VA uses undefined reference labels: {', '.join(undefined)}")
+
+        summary = _section_text(text, "summary", fields).lower()
+        if summary and not any(summary.startswith(task) for task in TASK_TYPES):
+            errors.append("Ref2VA summary must begin with an official task type")
+
+        retention = _section_text(text, "retention_analysis", fields)
+        found_markers = set(re.findall(r"\b[a-z_]+\b", retention)) & RETENTION_MARKERS
+        if retention and not found_markers:
+            errors.append("Ref2VA retention_analysis has no official retention marker")
+        missing_retention = sorted(label for label in defined_labels if label not in retention)
+        if missing_retention:
+            errors.append(f"Ref2VA retention_analysis omits labels: {', '.join(missing_retention)}")
 
     picture_lines = re.findall(
         r"(?mi)^Picture\s+(\d+)\s+is\s+the\s+(opening|closing)\s+image\s+at\s+(\d+(?:\.\d+)?)\s+seconds?\.\s*$",
@@ -99,14 +168,14 @@ def validate_h3(text: str, expected_duration: float | None = None) -> list[str]:
 
     times = _time_values(text)
     if expected_duration is not None:
-        if expected_duration <= 0:
-            errors.append("expected duration must be positive")
+        if not 4 <= expected_duration <= 15:
+            errors.append("H3 expected duration must be between 4 and 15 seconds")
         if any(value > expected_duration + 0.001 for value in times):
             errors.append("a shot time exceeds expected duration")
         shot_times = [
             int(minutes) * 60 + float(seconds)
             for minutes, seconds in re.findall(
-                r"(?mi)^\[Shot\s+\d+\]\s+At\s+(\d{1,2}):(\d{2}(?:\.\d{1,3})?)",
+                r"(?i)\[Shot\s+\d+\]\s+At\s+(\d{1,2}):(\d{2}(?:\.\d{1,3})?)",
                 text,
             )
         ]
