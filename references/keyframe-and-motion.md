@@ -2,6 +2,18 @@
 
 Use this reference to design still sequences and timed movement.
 
+## Official Continuous-Keyframe Default
+
+After Gate 2, convert every adjacent frame pair into one 5-second FL2VA clip. For `F0` through `F4`, produce four prompts: `F0→F1`, `F1→F2`, `F2→F3`, and `F3→F4`. Each clip begins in the exact Picture 1 composition and converges to the exact Picture 2 composition.
+
+Within each segment, use rigid physical paper behavior such as:
+
+`slide / peel / hinge / unfold / rotate on fastener / tighten / stack → slight rebound → press flat → lock`
+
+Use paper sliding, popping, light taps, rubbing, and crisp contact sounds by default. Do not add music, narration, subtitles, or visible text unless the user explicitly asks. Prohibit global fades, smooth digital drifting, chaotic scatter, fake UI, watermarks, and a mismatched kraft-paper opening.
+
+Do not infer a blank start or rebuild the whole composition from nothing when two approved frames exist. Preserve the complete Picture 1 inventory, animate an observable physical path, and progressively reduce the difference until Picture 2 is matched exactly.
+
 ## State Ladder
 
 For an evidence chain, write a ladder before prompts:
@@ -36,7 +48,7 @@ Example:
 
 Every beat must change at least one of: position, form, ownership, quantity, connection, or meaning.
 
-### Fast 10–15 second sequence
+### Fast multi-segment sequence
 
 - Start visible action within the first 0.15 seconds.
 - Use 0.35–1.20 seconds for most micro-actions.
@@ -89,3 +101,5 @@ Before writing video prompts, show the keyframes in order and verify:
 - every transition has a plausible path;
 - the final frame proves the claim;
 - there is enough difference between adjacent frames to justify animation.
+
+This is Gate 2. Do not write the FL2VA chain from unapproved prompt text alone; the prompt must describe the actual approved pixels and object inventory of both boundary images.

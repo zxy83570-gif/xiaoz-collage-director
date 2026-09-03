@@ -70,9 +70,9 @@ Element count and narrative density are different. Use many elements only when t
 
 For a premium fast sequence, increase the rate of meaningful changes, not the number of unrelated pieces.
 
-## 5. Logic Lock
+## 5. Gate 1 — Production Plan
 
-Before generating stills, present:
+Before generating stills, present the official scene-workflow decision package:
 
 - the one-sentence claim;
 - architecture and duration;
@@ -80,6 +80,9 @@ Before generating stills, present:
 - tracked continuity token;
 - final proving image;
 - palette direction and aspect ratio;
+- target duration and H3 sound policy;
 - anything intentionally excluded.
 
-Request approval when the user has not already approved that concept. Approval is about logic, not wording.
+Request approval when the user has not already approved that concept. This is Gate 1: approval is about production logic, not prompt wording. Do not generate or hand off a still prompt until Gate 1 is locked, unless the user explicitly supplied an already-approved production plan.
+
+For a process or narrative journey, translate the approved states into `F0` through `Fn`, then plan one 5-second segment for every adjacent pair. The full duration is normally `(frame count - 1) × 5 seconds`. Do not compress several major causal stages into one segment merely to reduce the frame count.

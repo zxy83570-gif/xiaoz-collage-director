@@ -1,42 +1,22 @@
-# Model Export
+# MiniMax H3 Official Prompt Export
 
-Create a model-neutral timeline first. Apply a platform adapter only after the creative plan is stable.
+Use this reference whenever the requested video model is MiniMax H3. Creative planning may be model-neutral, but the final prompt must use the official mode logic, field names, ordering, timing rules, reference duties, and audio classification below.
 
-## Generic Timeline Manifest
+## 1. Choose the Input Mode First
 
-Record:
+- **T2VA:** text alone defines the complete audiovisual timeline.
+- **I2VA:** an approved opening image is fixed at 0.00 seconds and the action develops forward.
+- **FL2VA:** approved opening and closing images define a continuous, reachable transformation. This is the default for the continuous-keyframe paper-collage workflow.
+- **L2VA:** an approved closing image is the only essential anchor; infer a plausible earlier state and converge precisely to it. Use only when the user actually supplies no approved opening frame.
+- **Ref2VA:** several image, video, or audio references carry distinct subject, keyframe, motion, timing, editing, or sound duties.
 
-- target model and generation mode;
-- duration and aspect ratio;
-- reference-file bindings and their duties;
-- global visual construction;
-- invariant subject and token anchors;
-- ordered motion beats;
-- camera behavior;
-- synchronized physical sounds;
-- music, narration, dialogue, and visible-text policy;
-- exact terminal state;
-- prohibited failures.
+Do not choose a richer mode merely because files were uploaded. One reference gets one clear primary duty. A still used only for identity is a subject reference, not automatically a picture keyframe.
 
-The manifest is the source of truth. An adapter may translate syntax but must not invent new story actions or remove continuity anchors.
+One generation must be 4–15 seconds and the written timeline must end at the requested duration. This workflow defaults to 5 seconds per adjacent-frame FL2VA segment and joins the segments in order with direct cuts.
 
-## MiniMax H3 Compatibility Adapter
+## 2. T2VA, I2VA, FL2VA, and L2VA Structure
 
-Use this section only when the user requests MiniMax H3.
-
-### Mode choice
-
-- Use text-only generation when no image identity or composition needs anchoring.
-- Use an opening image when the first frame must be preserved.
-- Use opening and closing images when the path between two approved states is the main task.
-- Use a closing image when the exact final composition matters more than the inferred start.
-- Use a reference-rich mode only when multiple media files carry distinct identity, motion, timing, or audio duties.
-
-For dense collage journeys, prefer several short opening/closing-image segments over one overloaded 15-second interpolation. One segment should express one dominant transformation.
-
-### Basic export structure
-
-For a text-only request, output these fields in this order:
+T2VA begins directly with the three fields. I2VA, FL2VA, and L2VA place the corresponding keyframe time-alignment instruction first, followed by one blank line and exactly these fields in this order:
 
 ```text
 integrated_multimodal_description: [Shot 1] ...
@@ -46,71 +26,107 @@ overall_soundscape: ...
 non_diegetic_music: ...
 ```
 
-When images anchor the start or end, place a plain-language reference timing block before the fields. Name each uploaded picture and its exact time, for example:
+The keyframe instruction must identify each supplied image and its exact role and time. Map an opening image to 0.00 seconds and a closing image to the requested end time. Use the target interface's actual picture identifiers; do not invent uploaded files.
+
+Path logic:
+
+- I2VA: anchored opening state → action begins → continuous development → result or reaction.
+- FL2VA: opening state → observable intermediate changes → shrinking difference → exact closing state.
+- L2VA: plausible preceding state → explicit action or transition → gradual convergence → exact closing state.
+
+## 3. Main Description
+
+`integrated_multimodal_description` follows playback order and includes the visual style, composition, subjects and positions, environment, lighting, physical actions, state changes, camera, dialogue or singing, synchronized diegetic sounds, and the moment each reference becomes visible or operative.
+
+- Start with `[Shot 1]` and no timestamp.
+- Write later cuts as `[Shot N] At MM:SS.mmm, ...`; times must be strictly increasing and inside the duration.
+- Add a cut only when it introduces a new subject, space, state, viewpoint, or time. Prefer camera movement when only distance or angle changes.
+- Use natural camera language and distinguish Zoom from Push/Pull, Pan from Truck, and Tilt from Pedestal.
+- State both what changes and what remains invariant. End in a clearly observable final state.
+- For paper collage, use discrete physical verbs and the official motion pattern: appear or slide in → slight rebound → press flat → pause → lock.
+- Put essential prohibitions briefly in the main description only when they prevent a likely failure; H3 has no separate negative-prompt field in this format.
+
+### Required FL2VA Density
+
+For every `F(n)→F(n+1)` prompt, write the full runnable English prompt rather than a synopsis. The main description must:
+
+1. identify the exact Picture 1 state and enumerate every identity- or continuity-critical visible element, including exact counts;
+2. name the global paper field, material treatment, palette, paper thickness, light, shadow direction, carrier token, and handoff elements that must remain stable;
+3. state `Motion begins immediately` and cover the complete 5 seconds through several ordered time windows;
+4. give each time window concrete actors, physical paper verbs, spatial directions, and observable results;
+5. keep the continuity carrier visible and intact while old elements exit and new elements assemble;
+6. converge all object positions, counts, poses, scale, palette, lighting, shadows, and framing precisely to Picture 2 by roughly 4.70–4.75 seconds;
+7. hold the exact Picture 2 state only for the final 0.25–0.30 seconds;
+8. specify one restrained camera behavior and stop it before the final lock;
+9. end with a compact `No ...` clause covering the likely failures for that segment;
+10. provide synchronized tactile events in `overall_soundscape` and normally use `non_diegetic_music: N/A`.
+
+Use this exact delivery skeleton:
 
 ```text
 Reference timing:
 Picture 1 is the opening image at 0.00 seconds.
 Picture 2 is the closing image at 5.00 seconds.
 
-integrated_multimodal_description: [Shot 1] ...
+integrated_multimodal_description: [Shot 1] ...full opening inventory and invariants... Motion begins immediately. From 0.00 to ... seconds, ... From ... to 4.70 seconds, ... All ... converge precisely to Picture 2. Hold the exact Picture 2 composition only from 4.70 to 5.00 seconds. ...camera... No ...
 
-overall_soundscape: ...
+overall_soundscape: ...synchronized physical sounds... No voices.
 
 non_diegetic_music: N/A
 ```
 
-Write the structural prose in English. Preserve user-supplied dialogue or visible wording exactly when it must appear.
+Do not replace this with bullets, a table, a generic timeline manifest, terse instructions, or explanatory prose. When several segments are requested, output one complete standalone block or `.txt` file per segment.
 
-### Main description
+## 4. Sound, Dialogue, and Visible Text
 
-The main field must cover the complete duration in playback order. Include:
+`overall_soundscape` is 1–4 English sentences summarizing ambience, physical action sounds, and nonverbal human sounds. Do not repeat dialogue, singing, or diegetic music. Use `N/A` only when the entire film is intentionally silent.
 
-- editorial collage construction and composition;
-- which elements remain fixed;
-- the tracked token and its retained anchors;
-- each physical action and its result;
-- purposeful camera behavior;
-- synchronized contact sounds at the action that produces them;
-- progressive convergence to the closing image when one is supplied.
+`non_diegetic_music` is 1–3 English sentences describing audience-only music through instrumentation, tempo, rhythm, and dynamics. Use `N/A` when there is no score. Music audible to characters belongs in the main description.
 
-Do not use a separate negative-prompt field. State essential exclusions briefly inside the main description only when they prevent a likely failure.
+- Assign `(S1)`, `(S2)`, and so on only to actual sound sources; keep the same speaker number across shots.
+- Write dialogue and lyrics as `<d>[Language] original content</d>`. Preserve user or reference wording and punctuation; write `[unclear]` instead of guessing.
+- For off-screen narration, state `says in an off-screen voiceover` and specify that visible characters' lips remain fully closed.
+- Use `<scenetrans>` when speech continues across a cut and `<cutoff>` when it is intentionally cut off at the end.
+- Put truly visible signs, titles, labels, or captions in English double quotes and preserve their wording exactly.
+- Structural prose is English; dialogue, lyrics, and visible text remain in their original language.
 
-### Sound fields
+## 5. Ref2VA Fixed Structure
 
-Use `overall_soundscape` for a concise summary of ambience, physical effects, and nonverbal human sound. Do not repeat dialogue. Use `N/A` only for deliberate total silence.
+Ref2VA uses exactly these six sections in this order:
 
-Use `non_diegetic_music` for music heard by the audience but not produced inside the scene. Write `N/A` when music is not requested.
+```text
+subject_definitions:
+summary:
+retention_analysis:
+detailed_description:
+overall_soundscape:
+non_diegetic_music:
+```
 
-### Duration and cuts
+Reference labels are duties, not upload-order aliases:
 
-Keep target duration within the currently supported model range. Timed beats must end at the requested duration. If the prompt contains multiple shots, later cut times must be strictly increasing and must introduce meaningful new information.
+- `<Subject N>`: visible people, animals, objects, scenes, clothing, props, interfaces, actions, poses, styles, or effects reused or modified in the target.
+- `<Picture N>`: an image acting as an opening, key, closing, editing, composition, or storyboard anchor.
+- `<Video N>`: an entire source video used for direct editing, continuation, or whole-video camera, edit, rhythm, or timing structure.
+- `<Audio N>`: an audio signal copied or referenced for track content, timbre, rhythm, music style, dialogue, lyrics, or sound quality.
 
-### Opening/closing-image path
+Do not create `<Audio N>` merely because a reference video contains sound. `<Video N>` and `<Audio N>` number independently. Keep every label's meaning stable across all six sections.
 
-Describe an observable route:
+Begin `summary` with the task types that actually apply: `keyframe completion`, `reference generation`, `video editing`, `video continuation`, `audio reuse`, or `audio reference`. Uploading media alone does not imply editing, continuation, or audio reuse.
 
-1. identify the exact opening arrangement;
-2. start the first physical action immediately;
-3. preserve the continuity token during intermediate changes;
-4. reduce the visible difference from the closing image beat by beat;
-5. match the closing composition, count, palette, and token anchors precisely.
+In `retention_analysis`, use only these relation markers:
 
-Do not request an unrelated transition merely because it looks dramatic.
+- visual: `fully_preserved`, `partially_preserved`, `attribute_transfer`, `weak_reference`;
+- audio: `fully_copy`, `partially_copy`, `reference`, `weak_reference`.
 
-### Reference-rich export
+Give each independent label one line stating where it appears, what is retained, and what changes. New target-story content is not automatically a reference-fidelity loss.
 
-When the selected H3 interface requires a structured multi-reference prompt, follow the interface's current schema exactly. Define each reference once and give it one primary duty. Separate identity, keyframe, motion, timing, and audio responsibilities; do not assume that a file's upload order defines its role.
+Start `detailed_description` with 1–2 English sentences establishing the whole-film style, then use the official shot syntax. Generation tasks normally use 350–500 English words, but a complete timeline and intact dialogue take priority over a mechanical word count. Insert each label where its duty first becomes clearly active. Do not reduce the section to a synopsis or reference inventory.
 
-## Other Models
+Reference audio used only for voice, rhythm, emotion, or delivery does not authorize reuse of its dialogue. Reproduce reference dialogue or lyrics only when direct reuse or re-performance is explicitly requested.
 
-For another video model, retain the generic manifest and translate only:
+## 6. Final Compliance Check
 
-- reference notation;
-- supported duration;
-- keyframe capabilities;
-- prompt field syntax;
-- audio support;
-- model-specific prohibited combinations.
+Before delivery, verify mode choice, duration, keyframe times, field order, shot numbering, strictly increasing cut times, stable speaker IDs, exact dialogue and visible wording, reference-label duties, retention markers, sound classification, invariants, and the terminal state. Run `scripts/validate_export.py` for structural checks.
 
-If the target format is unknown, deliver the manifest rather than guessing syntax.
+If the target is not H3, retain the approved creative logic but use that model's real syntax. Never present a generic manifest as an official H3 prompt.
